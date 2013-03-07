@@ -14,7 +14,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class App extends JFrame implements ActionListener {
@@ -90,15 +89,15 @@ public class App extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if ("alarm".equals(e.getActionCommand())) {
 			GlobalSetting.INSTANCE.setManualControl(true);
-			sbc.sendSingleByte((byte) '3');
+			sbc.sendSingleByte(AppConst.ARDUINO_ALARM_ON);
 		} 
 		if ("relay".equals(e.getActionCommand())) {
 			GlobalSetting.INSTANCE.setManualControl(true);
-			sbc.sendSingleByte((byte) '2');
+			sbc.sendSingleByte(AppConst.ARDUINO_RELAY_ON);
 		}
 		if ("off".equals(e.getActionCommand())) {
 			GlobalSetting.INSTANCE.setManualControl(true);
-			sbc.sendSingleByte((byte) '0');
+			sbc.sendSingleByte(AppConst.ARDUINO_SHUTDOWN);
 		}
 
 		}

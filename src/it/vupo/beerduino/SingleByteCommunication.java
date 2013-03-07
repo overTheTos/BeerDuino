@@ -5,6 +5,8 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 
+import it.vupo.beerduino.configuration.AppConst;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -121,14 +123,14 @@ public class SingleByteCommunication implements SerialPortEventListener {
 					
 					this.temperatura = temperature;
 					
-					byte outputByte = '0';
+					byte outputByte = AppConst.ARDUINO_SHUTDOWN;
 
 					if (temperature <= 22.0) {
-						outputByte = '1';
+						outputByte = AppConst.ARDUINO_GREEN_LED_ON;
 					} else if (temperature > 22.0 && temperature <= 24.0) {
-						outputByte = '2';
+						outputByte = AppConst.ARDUINO_RELAY_ON;
 					} else {
-						outputByte = '3';
+						outputByte = AppConst.ARDUINO_ALARM_ON;
 					}
 
 					sendSingleByte(outputByte);
