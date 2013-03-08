@@ -48,24 +48,62 @@ public class App extends JFrame implements ActionListener {
 		JLabel label = new JLabel("Actions");
 		// JTextField tf = new JTextField(10);// accepts upto 10 characters
 		
-		JButton almButton = new JButton("Alarm");
-		almButton.addActionListener(this);
-		almButton.setActionCommand("alarm");
-		
-		JButton warnButton = new JButton("Relay On");
-		warnButton.addActionListener(this);
-		warnButton.setActionCommand("relay");
-
 		JButton offButton = new JButton("OFF");
 		offButton.addActionListener(this);
 		offButton.setActionCommand("off");
 		
+		JButton greenButton = new JButton("Green Led");
+		greenButton.addActionListener(this);
+		greenButton.setActionCommand("green");
+		
+		JButton relayButton = new JButton("Relay On");
+		relayButton.addActionListener(this);
+		relayButton.setActionCommand("relay");
+		
+		JButton almButton = new JButton("Alarm");
+		almButton.addActionListener(this);
+		almButton.setActionCommand("alarm");
+		
+		JButton burnerButton = new JButton("Burner On");
+		burnerButton.addActionListener(this);
+		burnerButton.setActionCommand("burner");
+
+		JButton acidButton = new JButton("Acid Rest");
+		acidButton.addActionListener(this);
+		acidButton.setActionCommand("acid");
+		
+		JButton proteinButton = new JButton("Protein Rest");
+		proteinButton.addActionListener(this);
+		proteinButton.setActionCommand("protein");
+		
+		JButton sacchaButton = new JButton("Saccha On");
+		sacchaButton.addActionListener(this);
+		sacchaButton.setActionCommand("saccha");
+		
+		JButton mashButton = new JButton("Mash Out");
+		mashButton.addActionListener(this);
+		mashButton.setActionCommand("mashout");
+		
+		JButton appnameButton = new JButton("App Name");
+		appnameButton.addActionListener(this);
+		appnameButton.setActionCommand("appname");
+		
+		
 		// JButton reset = new JButton("Reset");
 		panel.add(label);// Components Added using Flow Layout
 		// panel.add(tf);
-		panel.add(almButton);
-		panel.add(warnButton);
 		panel.add(offButton);
+		panel.add(greenButton);
+		panel.add(relayButton);
+		panel.add(almButton);
+		panel.add(burnerButton);
+		panel.add(acidButton);
+		panel.add(proteinButton);
+		panel.add(sacchaButton);
+		panel.add(mashButton);
+		panel.add(appnameButton);
+		
+		
 
 		// panel.add(reset);
 		// Text Area at the Center
@@ -87,19 +125,46 @@ public class App extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if ("alarm".equals(e.getActionCommand())) {
-			GlobalSetting.INSTANCE.setManualControl(true);
-			sbc.sendSingleByte(AppConst.ARDUINO_ALARM_ON);
-		} 
-		if ("relay".equals(e.getActionCommand())) {
-			GlobalSetting.INSTANCE.setManualControl(true);
-			sbc.sendSingleByte(AppConst.ARDUINO_RELAY_ON);
-		}
 		if ("off".equals(e.getActionCommand())) {
 			GlobalSetting.INSTANCE.setManualControl(true);
 			sbc.sendSingleByte(AppConst.ARDUINO_SHUTDOWN);
 		}
-
+		if ("green".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_GREEN_LED_ON);
+		} 
+		if ("relay".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_RELAY_AND_YELLOW_LED_ON);
+		}
+		if ("alarm".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_ALARM_ON);
+		} 
+		if ("burner".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_BURNER_ON);
+		}
+		if ("acid".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_ACID_REST);
+		}
+		if ("protein".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_PROTEIN_REST);
+		} 
+		if ("saccha".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_SACCHARIFICATION);
+		}
+		if ("mashout".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_MASH_OUT);
+		}
+		if ("appname".equals(e.getActionCommand())) {
+			GlobalSetting.INSTANCE.setManualControl(true);
+			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_BEERDUINO);
+		}
 		}
 
 }

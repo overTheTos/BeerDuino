@@ -6,11 +6,14 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 
 import it.vupo.beerduino.configuration.AppConst;
+import it.vupo.beerduino.configuration.GlobalSetting;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
+
+import sun.awt.GlobalCursorManager;
 
 public class SingleByteCommunication implements SerialPortEventListener {
 	SerialPort serialPort;
@@ -20,7 +23,7 @@ public class SingleByteCommunication implements SerialPortEventListener {
 												// OS
 												// X
 	// "/dev/ttyUSB0", // Linux
-	// "COM6", // Windows
+	"COM6", // Windows
 	"COM4", // Windows
 	};
 	/** Buffered input stream from the port */
@@ -31,7 +34,7 @@ public class SingleByteCommunication implements SerialPortEventListener {
 	private static final int TIME_OUT = 2000;
 	/** Default bits per second for COM port. */
 	private static final int DATA_RATE = 9600;
-	
+
 	private Float temperatura;
 
 	public void initialize() {
@@ -54,7 +57,7 @@ public class SingleByteCommunication implements SerialPortEventListener {
 			System.out.println("Could not find COM port.");
 			return;
 		} else {
-			System.out.println("Found your Port");
+			System.out.println("Found your Port: "+portId.getName());
 		}
 
 		try {
@@ -118,22 +121,24 @@ public class SingleByteCommunication implements SerialPortEventListener {
 
 					}
 					Float temperature = Float.parseFloat(temp.trim());
-//					System.out
-//							.println("Temperatura sensore (°C): " + temperature);
-					
+					// System.out.println("Temperatura sensore (°C): " +
+					// temperature);
+
 					this.temperatura = temperature;
-					
+
 					byte outputByte = AppConst.ARDUINO_SHUTDOWN;
 
 					if (temperature <= 22.0) {
 						outputByte = AppConst.ARDUINO_GREEN_LED_ON;
 					} else if (temperature > 22.0 && temperature <= 24.0) {
-						outputByte = AppConst.ARDUINO_RELAY_ON;
+						outputByte = AppConst.ARDUINO_RELAY_AND_YELLOW_LED_ON;
 					} else {
 						outputByte = AppConst.ARDUINO_ALARM_ON;
 					}
 
-					sendSingleByte(outputByte);
+					if (!GlobalSetting.INSTANCE.isManualControl()) {
+						sendSingleByte(outputByte);
+					}
 
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -151,6 +156,5 @@ public class SingleByteCommunication implements SerialPortEventListener {
 	public void setTemperatura(Float temperatura) {
 		this.temperatura = temperatura;
 	}
-
 
 }
