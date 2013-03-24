@@ -4,12 +4,14 @@ import it.vupo.beerduino.configuration.AppConst;
 import it.vupo.beerduino.configuration.GlobalSetting;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -20,7 +22,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableCellRenderer;
+
+import sun.awt.VerticalBagLayout;
 
 public class App extends JFrame implements ActionListener {
 
@@ -50,7 +57,7 @@ public class App extends JFrame implements ActionListener {
 
 		// Put the radio buttons in a column in a panel.
 		JPanel radioPanel = createControlRadioButtons();
-
+		
 		JLabel label = new JLabel("Actions");
 		// JTextField tf = new JTextField(10);// accepts upto 10 characters
 
@@ -70,30 +77,6 @@ public class App extends JFrame implements ActionListener {
 		almButton.addActionListener(this);
 		almButton.setActionCommand("alarm");
 
-		JButton burnerButton = new JButton("Burner On");
-		burnerButton.addActionListener(this);
-		burnerButton.setActionCommand("burner");
-
-		JButton acidButton = new JButton("Acid Rest");
-		acidButton.addActionListener(this);
-		acidButton.setActionCommand("acid");
-
-		JButton proteinButton = new JButton("Protein Rest");
-		proteinButton.addActionListener(this);
-		proteinButton.setActionCommand("protein");
-
-		JButton sacchaButton = new JButton("Saccha On");
-		sacchaButton.addActionListener(this);
-		sacchaButton.setActionCommand("saccha");
-
-		JButton mashButton = new JButton("Mash Out");
-		mashButton.addActionListener(this);
-		mashButton.setActionCommand("mashout");
-
-		JButton appnameButton = new JButton("App Name");
-		appnameButton.addActionListener(this);
-		appnameButton.setActionCommand("appname");
-
 		// JButton reset = new JButton("Reset");
 		panel.add(label);// Components Added using Flow Layout
 		// panel.add(tf);
@@ -101,26 +84,29 @@ public class App extends JFrame implements ActionListener {
 		panel.add(greenButton);
 		panel.add(relayButton);
 		panel.add(almButton);
-		panel.add(burnerButton);
-		panel.add(acidButton);
-		panel.add(proteinButton);
-		panel.add(sacchaButton);
-		panel.add(mashButton);
-		panel.add(appnameButton);
-
-		// panel.add(reset);
-		// Text Area at the Center
-		JPanel centerPanel = new JPanel();
+		
 		Dimension centerDimension = new Dimension(1024, 350);
-		centerPanel.setPreferredSize(centerDimension);
-		centerPanel.add(radioPanel);
-
+		radioPanel.setPreferredSize(centerDimension);
+		
 		JTextField temperature = new JTextField(20);
-
-		centerPanel.add(temperature);
+		
+		JTable table = createTable();
+		JScrollPane tableScrollPane = new JScrollPane(table);
+		
+		Box detailVerticalBox = Box.createVerticalBox();
+		detailVerticalBox.add(radioPanel);
+		detailVerticalBox.add(tableScrollPane);
+		
+		Box summaryVerticalBox = Box.createVerticalBox();
+		summaryVerticalBox.add(temperature);
+		
+		Box horizontalBox = Box.createHorizontalBox();
+		horizontalBox.add(detailVerticalBox);
+		horizontalBox.add(summaryVerticalBox);
+		
 		// Adding Components to the frame.
 		frame.getContentPane().add(BorderLayout.NORTH, mb);
-		frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
+		frame.getContentPane().add(BorderLayout.CENTER, horizontalBox);
 		frame.getContentPane().add(BorderLayout.SOUTH, panel);
 		frame.setVisible(true);
 
@@ -191,8 +177,7 @@ public class App extends JFrame implements ActionListener {
 		JMenu m2 = new JMenu("Help");
 		mb.add(m1);
 		mb.add(m2);
-		JMenuItem m11 = new JMenuItem("New...");
-		m1.add(m11);
+
 		// Exit
 		JMenuItem m12 = new JMenuItem("Exit");
 		m12.addActionListener(new ActionListener() {
@@ -231,24 +216,37 @@ public class App extends JFrame implements ActionListener {
 		if ("alarm".equals(e.getActionCommand())) {
 			sbc.sendSingleByte(AppConst.ARDUINO_ALARM_ON);
 		}
-		if ("burner".equals(e.getActionCommand())) {
-			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_BURNER_ON);
-		}
-		if ("acid".equals(e.getActionCommand())) {
-			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_ACID_REST);
-		}
-		if ("protein".equals(e.getActionCommand())) {
-			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_PROTEIN_REST);
-		}
-		if ("saccha".equals(e.getActionCommand())) {
-			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_SACCHARIFICATION);
-		}
-		if ("mashout".equals(e.getActionCommand())) {
-			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_MASH_OUT);
-		}
-		if ("appname".equals(e.getActionCommand())) {
-			sbc.sendSingleByte(AppConst.ARDUINO_WRITE_BEERDUINO);
-		}
 	}
 
+	public JTable createTable(){
+		
+		String[] columnNames = {"Current Step",
+				                "Step Name",
+				                "Step Time",
+				                "Rest Time",
+				                "Rest Start Temp",
+				                "Rest Stop Temp",
+				                "Step Elapsed Time"};
+		
+		Object[][] data = {
+		        {false, "Acid Rest", 0, 15, 35, 35, 0},
+		        {false, "Protein Rest", 7, 20, 42, 42, 0},
+		        {true, "Saccharification", 24, 60, 66, 66, 0},
+		        {false, "Mash Out", 12, 15, 78, 78, 0}
+		        };
+		
+		final JTable table = new JTable(data, columnNames);
+        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        table.setFillsViewportHeight(true);
+        
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment( JLabel.RIGHT );
+        table.getColumnModel().getColumn(2).setCellRenderer( rightRenderer );
+        table.getColumnModel().getColumn(3).setCellRenderer( rightRenderer );
+        table.getColumnModel().getColumn(4).setCellRenderer( rightRenderer );
+        table.getColumnModel().getColumn(5).setCellRenderer( rightRenderer );
+        table.getColumnModel().getColumn(6).setCellRenderer( rightRenderer );
+        
+        return table;
+	}
 }
