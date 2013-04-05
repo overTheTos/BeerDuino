@@ -4,15 +4,14 @@ import it.vupo.beerduino.configuration.AppConst;
 import it.vupo.beerduino.configuration.GlobalSetting;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.text.NumberFormat;
 
-import javax.swing.BorderFactory;
+import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -29,8 +28,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
-
-import sun.awt.VerticalBagLayout;
 
 public class App extends JFrame implements ActionListener {
 
@@ -93,12 +90,14 @@ public class App extends JFrame implements ActionListener {
 		
 		JTextField temperature = new JTextField(20);
 		
-		JTable table = createTable();
-		JScrollPane tableScrollPane = new JScrollPane(table);
+//		JTable table = createTable();
+//		JScrollPane tableScrollPane = new JScrollPane(table);
+		
+		Box table = createTable();
 		
 		Box detailVerticalBox = Box.createVerticalBox();
 		detailVerticalBox.add(radioPanel);
-		detailVerticalBox.add(tableScrollPane);
+		detailVerticalBox.add(table);
 		
 		Box summaryVerticalBox = Box.createVerticalBox();
 		summaryVerticalBox.add(temperature);
@@ -221,9 +220,9 @@ public class App extends JFrame implements ActionListener {
 		}
 	}
 
-	private Object[][] data;
 	
-	public JTable createTable(){
+	
+	public Box createTable(){
 		
 		String[] columnNames = {"Current Step",
 				                "Step Name",
@@ -233,12 +232,11 @@ public class App extends JFrame implements ActionListener {
 				                "Rest Stop Temp",
 				                "Step Elapsed Time"};
 		
-//		data = {
-//		        {false, "Acid Rest", 0, 15, 35, 35, 0},
-//		        {false, "Protein Rest", 7, 20, 42, 42, 0},
-//		        {true, "Saccharification", 24, 60, 66, 66, 0},
-//		        {false, "Mash Out", 12, 15, 78, 78, 0}
-//		        };
+		Object[][] data = {{false, "Acid Rest", 0, 15, 35, 35, 0},
+		        {false, "Protein Rest", 7, 20, 42, 42, 0},
+		        {true, "Saccharification", 24, 60, 66, 66, 0},
+		        {false, "Mash Out", 12, 15, 78, 78, 0}
+		        };
 		
 		final JTable table = new JTable(data, columnNames);
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
@@ -253,19 +251,45 @@ public class App extends JFrame implements ActionListener {
         table.getColumnModel().getColumn(6).setCellRenderer( rightRenderer );
         
         
-        //TODO: FINIRE BUTTON 
         JButton addRow = new JButton();
-        addRow.setText("Add");
+        addRow.setText("Add Step");
+        addRow.setToolTipText("Add a step to the mash");
+        addRow.setVerticalTextPosition(AbstractButton.CENTER);
+        addRow.setHorizontalTextPosition(AbstractButton.LEADING);
         addRow.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
 				createAndShowGUI(); 
 			}
 		});
         
-        return table;
+        JButton removeRow = new JButton();
+        removeRow.setText("Remove Step");
+        removeRow.setToolTipText("Remove a step to the mash");
+        removeRow.setVerticalTextPosition(AbstractButton.CENTER);
+        removeRow.setHorizontalTextPosition(AbstractButton.LEADING);
+        removeRow.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//TODO: action
+			}
+		});
+        
+        JScrollPane pane = new JScrollPane(table);
+        
+        Box hBox = Box.createHorizontalBox();
+        hBox.add(addRow);
+        hBox.add(removeRow);
+        
+        Box box = Box.createVerticalBox();
+        box.add(pane);
+        box.add(hBox);
+        
+        
+                
+        return box;
 	}
 	
     /**

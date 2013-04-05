@@ -1,6 +1,7 @@
 package it.vupo.beerduino;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -19,6 +20,8 @@ import javax.swing.JTextField;
 
 public class InputForm extends JPanel{
 	
+	private static final long serialVersionUID = -5584764145670638738L;
+	
 	private static int DEFAULT_VALUE = 0;
 	private NumberFormat numberFormat;
 	
@@ -30,14 +33,13 @@ public class InputForm extends JPanel{
 	private JLabel restStartTempLabel = new JLabel();
 	private JLabel restStopTempLabel = new JLabel();
 	
-	private JTextField stepNameField = new JTextField();
-	private JTextField stepTimeField = new JTextField(numberFormat.format(DEFAULT_VALUE), 5);
-	private JTextField restTimeField = new JTextField(numberFormat.format(DEFAULT_VALUE), 5);
-	private JTextField restStartTempField = new JTextField(numberFormat.format(DEFAULT_VALUE), 5);
-	private JTextField restStopTempField = new JTextField(numberFormat.format(DEFAULT_VALUE), 5);
+	private JTextField stepNameField = new JTextField(20);
+	private JTextField stepTimeField = new JTextField(5); 
+	private JTextField restTimeField = new JTextField(5); 
+	private JTextField restStartTempField = new JTextField(5); 
+	private JTextField restStopTempField = new JTextField(5); 
 	
 	private JButton confirmBtn = new JButton();
-	private JButton clearBtn = new JButton();
 	private JButton exitBtn = new JButton();
 	
 	public InputForm(){
@@ -85,10 +87,27 @@ public class InputForm extends JPanel{
 				restStopTempField.getText(),
 				0};
 				
+				System.out.println("Current step: "+ dataInsert[0]);
+				System.out.println("Step name: "+ dataInsert[1]);
+				System.out.println("Step time: "+ dataInsert[2]);
+				System.out.println("Rest time: "+ dataInsert[3]);
+				System.out.println("Rest start temp: "+ dataInsert[4]);
+				System.out.println("Rest stop temp: "+ dataInsert[5]);
+				System.out.println("Step elapsed time: "+ dataInsert[6]);
+				
+				
 			}
 		});
-		clearBtn.setText("Clear");
+		
 		exitBtn.setText("Exit");
+		exitBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+								
+			}
+		});
+		
 		
 		JPanel labelPane = new JPanel(new GridLayout(0,1));
 	    labelPane.add(stepNameLabel);
@@ -106,7 +125,6 @@ public class InputForm extends JPanel{
 	    
 	    JPanel btnPane = new JPanel(new GridLayout(0,1));
 	    btnPane.add(confirmBtn);
-	    btnPane.add(clearBtn);
 	    btnPane.add(exitBtn);
 	    
 	    //Put the panels in this panel, labels on left,
@@ -127,7 +145,7 @@ public class InputForm extends JPanel{
 
     	int MIN_TEMP = 1;
     	int MAX_TEMP = 90;
-    	int MIN_TIME = 1;
+    	int MIN_TIME = 0;
     	int MAX_TIME = 999;
     	
     	public boolean shouldYieldFocus(JComponent input) {
