@@ -1,6 +1,7 @@
 package it.vupo.beerduino;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -10,6 +11,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -104,7 +107,7 @@ public class InputForm extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-								
+							
 			}
 		});
 		
@@ -123,8 +126,11 @@ public class InputForm extends JPanel{
 	    fieldPane.add(restStartTempField);
 	    fieldPane.add(restStopTempField);
 	    
-	    JPanel btnPane = new JPanel(new GridLayout(0,1));
+	    JPanel btnPane = new JPanel();
+	    btnPane.setAlignmentX(1f);
+	    btnPane.setLayout(new BoxLayout(btnPane, BoxLayout.X_AXIS));
 	    btnPane.add(confirmBtn);
+	    btnPane.add(Box.createRigidArea(new Dimension(5, 0)));
 	    btnPane.add(exitBtn);
 	    
 	    //Put the panels in this panel, labels on left,

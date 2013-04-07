@@ -6,6 +6,7 @@ import it.vupo.beerduino.configuration.GlobalSetting;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -27,6 +29,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
 public class App extends JFrame implements ActionListener {
@@ -45,10 +49,27 @@ public class App extends JFrame implements ActionListener {
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		frame.setSize(1024, 768);
+		frame.setSize(800, 600);
 
-		// Creating the MenuBar and adding components
+		// North region
 		JMenuBar mb = createMenuBar();
+	
+		
+		//http://zetcode.com/tutorials/javaswingtutorial/swinglayoutmanagement/
+//		JToolBar toolbar = new JToolBar();
+//        toolbar.setFloatable(false);
+//        
+//        ImageIcon exit = new ImageIcon("check.png");
+//        JButton bexit = new JButton(exit);
+//        bexit.setBorder(new EmptyBorder(0 ,0, 0, 0));
+//        toolbar.add(bexit);
+//        
+//        add(toolbar, BorderLayout.NORTH);
+//        
+//        //Left toolbar
+//        JToolBar vertical = new JToolBar(JToolBar.VERTICAL);
+//        vertical.setFloatable(false);
+//        vertical.setMargin(new Insets(10, 5, 5, 5));
 
 		// Creating the panel at bottom and adding components
 		JPanel panel = new JPanel(); // the panel is not visible in output
@@ -59,7 +80,6 @@ public class App extends JFrame implements ActionListener {
 		JPanel radioPanel = createControlRadioButtons();
 		
 		JLabel label = new JLabel("Actions");
-		// JTextField tf = new JTextField(10);// accepts upto 10 characters
 
 		JButton offButton = new JButton("OFF");
 		offButton.addActionListener(this);
@@ -281,6 +301,7 @@ public class App extends JFrame implements ActionListener {
         
         Box hBox = Box.createHorizontalBox();
         hBox.add(addRow);
+        hBox.add(Box.createRigidArea(new Dimension(5, 0)));
         hBox.add(removeRow);
         
         Box box = Box.createVerticalBox();
@@ -300,11 +321,11 @@ public class App extends JFrame implements ActionListener {
     private static void createAndShowGUI() {
         //Create and set up the window.
         JFrame frame = new JFrame("InputForm");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          
         //Create and set up the content pane.
         JComponent newContentPane = new InputForm();
-        newContentPane.setOpaque(true); //content panes must be opaque
+        newContentPane.setOpaque(true); 
+        //content panes must be opaque
         frame.setContentPane(newContentPane);
          
         //Display the window.
