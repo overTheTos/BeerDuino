@@ -28,117 +28,175 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
 public class App extends JFrame implements ActionListener {
 
 	private SingleByteCommunication sbc;
 
-	public static void main(String args[]) {
-		new App();
-	}
+	public App() {
 
-	App() {
-		// Start with automatic temperature control
-		GlobalSetting.INSTANCE.setManualControl(false);
-
-		JFrame frame = new JFrame(AppConst.APPLICATION_NAME);
-
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		frame.setSize(800, 600);
-
-		// North region
-		JMenuBar mb = createMenuBar();
+        initUI();
+    }
 	
+	public final void initUI() {
+
+		//Main frame
+		GlobalSetting.INSTANCE.setManualControl(false);
+//		JFrame frame = new JFrame(AppConst.APPLICATION_NAME);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.setSize(800, 600);
 		
-		//http://zetcode.com/tutorials/javaswingtutorial/swinglayoutmanagement/
-//		JToolBar toolbar = new JToolBar();
-//        toolbar.setFloatable(false);
-//        
-//        ImageIcon exit = new ImageIcon("check.png");
-//        JButton bexit = new JButton(exit);
-//        bexit.setBorder(new EmptyBorder(0 ,0, 0, 0));
-//        toolbar.add(bexit);
-//        
-//        add(toolbar, BorderLayout.NORTH);
-//        
-//        //Left toolbar
-//        JToolBar vertical = new JToolBar(JToolBar.VERTICAL);
-//        vertical.setFloatable(false);
-//        vertical.setMargin(new Insets(10, 5, 5, 5));
-
-		// Creating the panel at bottom and adding components
-		JPanel panel = new JPanel(); // the panel is not visible in output
-
-		// In initialization code:
-
-		// Put the radio buttons in a column in a panel.
-		JPanel radioPanel = createControlRadioButtons();
 		
-		JLabel label = new JLabel("Actions");
+		setSize(800, 600);
+        setTitle(AppConst.APPLICATION_NAME);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+		
+		// North region
+		JMenuBar menubar = createMenuBar();
+        setJMenuBar(menubar);
 
-		JButton offButton = new JButton("OFF");
+        JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
+
+        ImageIcon addImage = new ImageIcon("images/add.png");
+        JButton addButton = new JButton(addImage);
+        addButton.setBorder(new EmptyBorder(0, 3, 0, 3));
+        toolbar.add(addButton);
+        
+        ImageIcon removeImage = new ImageIcon("images/remove.png");
+        JButton removeButton = new JButton(removeImage);
+        removeButton.setBorder(new EmptyBorder(0, 3, 0, 3));
+        toolbar.add(removeButton);
+        
+        ImageIcon playImage = new ImageIcon("images/play.png");
+        JButton playButton = new JButton(playImage);
+        playButton.setBorder(new EmptyBorder(0, 3, 0, 3));
+        toolbar.add(playButton);
+        
+        ImageIcon stopImage = new ImageIcon("images/stop.png");
+        JButton stopButton = new JButton(stopImage);
+        addButton.setBorder(new EmptyBorder(0, 3, 0, 3));
+        toolbar.add(stopButton);
+        
+        add(toolbar, BorderLayout.NORTH);
+        
+        
+        //West Region
+        JToolBar vertical = new JToolBar(JToolBar.VERTICAL);
+        vertical.setFloatable(false);
+        vertical.setMargin(new Insets(10, 5, 5, 5));
+
+        ImageIcon offImage = new ImageIcon("images/power.png");
+		JButton offButton = new JButton(offImage);
 		offButton.addActionListener(this);
 		offButton.setActionCommand("off");
+		offButton.setBorder(new EmptyBorder(3, 0, 3, 0));
 
-		JButton greenButton = new JButton("Green Led");
+		ImageIcon greenImage = new ImageIcon("images/green.png");
+		JButton greenButton = new JButton(greenImage);
 		greenButton.addActionListener(this);
 		greenButton.setActionCommand("green");
+		greenButton.setBorder(new EmptyBorder(3, 0, 3, 0));
 
-		JButton relayButton = new JButton("Relay On");
+		ImageIcon relaynImage = new ImageIcon("images/burn.png");
+		JButton relayButton = new JButton(relaynImage);
 		relayButton.addActionListener(this);
 		relayButton.setActionCommand("relay");
+		relayButton.setBorder(new EmptyBorder(3, 0, 3, 0));
 
-		JButton almButton = new JButton("Alarm");
+		ImageIcon almImage = new ImageIcon("images/alarm.png");
+		JButton almButton = new JButton(almImage);
 		almButton.addActionListener(this);
 		almButton.setActionCommand("alarm");
+		almButton.setBorder(new EmptyBorder(3, 0, 3, 0));
 
-		// JButton reset = new JButton("Reset");
-		panel.add(label);// Components Added using Flow Layout
-		// panel.add(tf);
-		panel.add(offButton);
-		panel.add(greenButton);
-		panel.add(relayButton);
-		panel.add(almButton);
-		
-		Dimension centerDimension = new Dimension(1024, 350);
-		radioPanel.setPreferredSize(centerDimension);
-		
-		JTextField temperature = new JTextField(20);
-		
-//		JTable table = createTable();
-//		JScrollPane tableScrollPane = new JScrollPane(table);
-		
-		Box table = createTable();
-		
-		Box detailVerticalBox = Box.createVerticalBox();
+		vertical.add(offButton);
+        vertical.add(greenButton);
+        vertical.add(relayButton);
+        vertical.add(almButton);
+
+        add(vertical, BorderLayout.WEST);
+        
+        
+        //Center Region
+        JPanel centerPanel = new JPanel();
+        	
+        	// Radio Manual/Auto control panel
+     		JPanel radioPanel = createControlRadioButtons();
+     		Dimension centerDimension = new Dimension(100, 500);
+     		radioPanel.setPreferredSize(centerDimension);
+     		
+     		//Table mash steps
+     		Box table = createTable();
+     		
+ 		Box detailVerticalBox = Box.createVerticalBox();
 		detailVerticalBox.add(radioPanel);
 		detailVerticalBox.add(table);
 		
 		Box summaryVerticalBox = Box.createVerticalBox();
-		summaryVerticalBox.add(temperature);
+		summaryVerticalBox.add(new JTextArea());
 		
-		Box horizontalBox = Box.createHorizontalBox();
-		horizontalBox.add(detailVerticalBox);
-		horizontalBox.add(summaryVerticalBox);
+		//Box horizontalBox = Box.createHorizontalBox();
+		centerPanel.add(detailVerticalBox);
+		centerPanel.add(summaryVerticalBox);	
+        
+        
+        add(centerPanel, BorderLayout.CENTER);
+        
+        //South Region
+        JTextField temperature = new JTextField(10);
+        JLabel statusbar = new JLabel(" Current temperature: " + temperature);
+        statusbar.setPreferredSize(new Dimension(-1, 22));
+        statusbar.setBorder(LineBorder.createGrayLineBorder());
+        
+        add(statusbar, BorderLayout.SOUTH);
+        
+		
+		//http://zetcode.com/tutorials/javaswingtutorial/swinglayoutmanagement/
+
+		
+		
+        //frame.setVisible(true);
+		
+		
+		
+		
 		
 		// Adding Components to the frame.
-		frame.getContentPane().add(BorderLayout.NORTH, mb);
-		frame.getContentPane().add(BorderLayout.CENTER, horizontalBox);
-		frame.getContentPane().add(BorderLayout.SOUTH, panel);
-		frame.setVisible(true);
+//		frame.getContentPane().add(BorderLayout.NORTH, mb);
+//		frame.getContentPane().add(BorderLayout.CENTER, horizontalBox);
+//		frame.getContentPane().add(BorderLayout.SOUTH, panel);
+//		frame.setVisible(true);
+		
 
-		// pack();
+		// Automatic temperature control
 		sbc = new SingleByteCommunication();
 		sbc.initialize();
 
 		while (true) {
 			temperature.setText(String.valueOf(sbc.getTemperatura()));
 		}
+		
+	}
+	
+	public static void main(String args[]) {
+		//new App();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                App application = new App();
+                application.setVisible(true);
+            }
+        });
 	}
 
 	/**

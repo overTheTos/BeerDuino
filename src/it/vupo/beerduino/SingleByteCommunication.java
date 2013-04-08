@@ -24,6 +24,7 @@ public class SingleByteCommunication implements SerialPortEventListener {
 												// X
 	// "/dev/ttyUSB0", // Linux
 	"COM6", // Windows
+	"COM3", // Windows
 	"COM4", // Windows
 	"COM13", // Windows
 	};
