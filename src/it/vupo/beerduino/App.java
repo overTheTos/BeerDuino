@@ -7,7 +7,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -38,27 +37,33 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 public class App extends JFrame implements ActionListener {
 
+	private static final long serialVersionUID = -526930065395069010L;
+
 	private SingleByteCommunication sbc;
-
-	public App() {
-
-        initUI();
-    }
+	
+	private JButton addButton;
+	private JButton removeButton;
+	private JButton playButton;
+	private JButton stopButton;
+	
+	private JButton offButton;
+	private JButton greenButton;
+	private JButton relayButton;
+	private JButton almButton;
 	
 	public final void initUI() {
 
-		//Main frame
+		//Inizializzazione dei buttons
 		GlobalSetting.INSTANCE.setManualControl(false);
-//		JFrame frame = new JFrame(AppConst.APPLICATION_NAME);
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.setSize(800, 600);
 		
 		
+		//Main frame
 		setSize(800, 600);
         setTitle(AppConst.APPLICATION_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-		
+	
+        
 		// North region
 		JMenuBar menubar = createMenuBar();
         setJMenuBar(menubar);
@@ -67,22 +72,22 @@ public class App extends JFrame implements ActionListener {
         toolbar.setFloatable(false);
 
         ImageIcon addImage = new ImageIcon("images/add.png");
-        JButton addButton = new JButton(addImage);
+        addButton = new JButton(addImage);
         addButton.setBorder(new EmptyBorder(0, 3, 0, 3));
         toolbar.add(addButton);
         
         ImageIcon removeImage = new ImageIcon("images/remove.png");
-        JButton removeButton = new JButton(removeImage);
+        removeButton = new JButton(removeImage);
         removeButton.setBorder(new EmptyBorder(0, 3, 0, 3));
         toolbar.add(removeButton);
         
         ImageIcon playImage = new ImageIcon("images/play.png");
-        JButton playButton = new JButton(playImage);
+        playButton = new JButton(playImage);
         playButton.setBorder(new EmptyBorder(0, 3, 0, 3));
         toolbar.add(playButton);
         
         ImageIcon stopImage = new ImageIcon("images/stop.png");
-        JButton stopButton = new JButton(stopImage);
+        stopButton = new JButton(stopImage);
         addButton.setBorder(new EmptyBorder(0, 3, 0, 3));
         toolbar.add(stopButton);
         
@@ -95,29 +100,34 @@ public class App extends JFrame implements ActionListener {
         vertical.setMargin(new Insets(10, 5, 5, 5));
 
         ImageIcon offImage = new ImageIcon("images/power.png");
-		JButton offButton = new JButton(offImage);
+		offButton = new JButton(offImage);
 		offButton.addActionListener(this);
 		offButton.setActionCommand("off");
 		offButton.setBorder(new EmptyBorder(3, 0, 3, 0));
 
 		ImageIcon greenImage = new ImageIcon("images/green.png");
-		JButton greenButton = new JButton(greenImage);
+		greenButton = new JButton(greenImage);
 		greenButton.addActionListener(this);
 		greenButton.setActionCommand("green");
 		greenButton.setBorder(new EmptyBorder(3, 0, 3, 0));
 
 		ImageIcon relaynImage = new ImageIcon("images/burn.png");
-		JButton relayButton = new JButton(relaynImage);
+		relayButton = new JButton(relaynImage);
 		relayButton.addActionListener(this);
 		relayButton.setActionCommand("relay");
 		relayButton.setBorder(new EmptyBorder(3, 0, 3, 0));
 
 		ImageIcon almImage = new ImageIcon("images/alarm.png");
-		JButton almButton = new JButton(almImage);
+		almButton = new JButton(almImage);
 		almButton.addActionListener(this);
 		almButton.setActionCommand("alarm");
 		almButton.setBorder(new EmptyBorder(3, 0, 3, 0));
 
+		offButton.setEnabled(false);
+		greenButton.setEnabled(false);
+		relayButton.setEnabled(false);
+		almButton.setEnabled(false);
+		
 		vertical.add(offButton);
         vertical.add(greenButton);
         vertical.add(relayButton);
@@ -131,7 +141,7 @@ public class App extends JFrame implements ActionListener {
         	
         	// Radio Manual/Auto control panel
      		JPanel radioPanel = createControlRadioButtons();
-     		Dimension centerDimension = new Dimension(100, 500);
+     		Dimension centerDimension = new Dimension(100, 50);
      		radioPanel.setPreferredSize(centerDimension);
      		
      		//Table mash steps
@@ -148,8 +158,8 @@ public class App extends JFrame implements ActionListener {
 		centerPanel.add(detailVerticalBox);
 		centerPanel.add(summaryVerticalBox);	
         
-        
         add(centerPanel, BorderLayout.CENTER);
+        
         
         //South Region
         JTextField temperature = new JTextField(10);
@@ -162,42 +172,31 @@ public class App extends JFrame implements ActionListener {
 		
 		//http://zetcode.com/tutorials/javaswingtutorial/swinglayoutmanagement/
 
-		
-		
-        //frame.setVisible(true);
-		
-		
-		
-		
-		
-		// Adding Components to the frame.
-//		frame.getContentPane().add(BorderLayout.NORTH, mb);
-//		frame.getContentPane().add(BorderLayout.CENTER, horizontalBox);
-//		frame.getContentPane().add(BorderLayout.SOUTH, panel);
-//		frame.setVisible(true);
-		
-
 		// Automatic temperature control
-		sbc = new SingleByteCommunication();
-		sbc.initialize();
-
-		while (true) {
-			temperature.setText(String.valueOf(sbc.getTemperatura()));
-		}
+//		sbc = new SingleByteCommunication();
+//		sbc.initialize();
+//
+//		while (true) {
+//			temperature.setText(String.valueOf(sbc.getTemperatura()));
+//		}
 		
 	}
 	
-	public static void main(String args[]) {
-		//new App();
-		
-		SwingUtilities.invokeLater(new Runnable() {
+	public App() {
+
+        initUI();
+    }
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
-                App application = new App();
-                application.setVisible(true);
+                App ex = new App();
+                ex.setVisible(true);
             }
         });
-	}
+    }
 
 	/**
 	 * Radio buttons control creation
@@ -225,6 +224,10 @@ public class App extends JFrame implements ActionListener {
 		autoControlButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				GlobalSetting.INSTANCE.setManualControl(false);
+				offButton.setEnabled(false);
+				greenButton.setEnabled(false);
+				relayButton.setEnabled(false);
+				almButton.setEnabled(false);
 				JOptionPane.showMessageDialog(App.this,
 						"Automatic Control Enabled", "Control",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -233,6 +236,10 @@ public class App extends JFrame implements ActionListener {
 		manualControlButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				GlobalSetting.INSTANCE.setManualControl(true);
+				offButton.setEnabled(true);
+				greenButton.setEnabled(true);
+				relayButton.setEnabled(true);
+				almButton.setEnabled(true);
 				JOptionPane.showMessageDialog(App.this,
 						"Manual Control Enabled", "Control",
 						JOptionPane.INFORMATION_MESSAGE);
