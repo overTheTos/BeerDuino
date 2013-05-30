@@ -1,22 +1,30 @@
 package it.vupo.beerduino;
 
+
+
 import it.vupo.beerduino.configuration.AppConst;
+import it.vupo.beerduino.configuration.Configuration;
 import it.vupo.beerduino.configuration.GlobalSetting;
+import it.vupo.beerduino.recipe.Load;
+import it.vupo.beerduino.recipe.Recipe;
+import it.vupo.beerduino.thermo.Thermo;
+import it.vupo.beerduino.thread.Timers;
+import it.vupo.beerduino.timer.TimerPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -33,7 +41,16 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+import org.apache.log4j.Logger;
+import org.jdesktop.layout.GroupLayout;
+
+
+
+
+
+
 
 public class App extends JFrame implements ActionListener {
 
@@ -41,11 +58,44 @@ public class App extends JFrame implements ActionListener {
 
 	private SingleByteCommunication sbc;
 	
-	private JButton addButton;
-	private JButton removeButton;
+	private static final Logger log = Logger.getLogger(App.class);
+
+	//Configurazione
+	private Configuration configuration;
+    private String pathImages;
+	
+	//Ricetta
+	private Recipe recipe;
+	
+	//Timer
+    private Timers timer;
+    private TimerPanel chrono;
+    private JPanel timerPanel;
+	
+	//Termometro grafico di mash
+    private Thermo mashThermo;
+    private JCheckBox avvisiMash;
+    
+    //Parte tabella con step da promash
+    private DefaultTableModel mashModel;
+    private DefaultTableModel boilModel;
+    private JPanel mashPanel;
+    private JTable mashTable;
+    private JPanel mashTablePanel;
+    private JPanel boilPanel;
+    private JTable boilTable;
+    private JScrollPane jScrollPane2;
+    private JScrollPane jScrollPane3;
+    private JPanel thermosPanel;
+    private JButton newButton;
+    private JButton loadButton;
+    private JButton resetButton;
+    
+    //Pulsanti di Avvio/Stop
 	private JButton playButton;
 	private JButton stopButton;
 	
+	//Pulsanti sulla striscia sinistra
 	private JButton offButton;
 	private JButton greenButton;
 	private JButton relayButton;
@@ -56,6 +106,10 @@ public class App extends JFrame implements ActionListener {
 		//Inizializzazione dei buttons
 		GlobalSetting.INSTANCE.setManualControl(false);
 		
+		//Serial va inizializzato 
+		this.serial.getTx().put("?atxOn$");
+		
+		configuration = new Configuration();
 		
 		//Main frame
 		setSize(800, 600);
@@ -71,15 +125,19 @@ public class App extends JFrame implements ActionListener {
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
 
-        ImageIcon addImage = new ImageIcon("images/add.png");
-        addButton = new JButton(addImage);
-        addButton.setBorder(new EmptyBorder(0, 3, 0, 3));
-        toolbar.add(addButton);
-        
-        ImageIcon removeImage = new ImageIcon("images/remove.png");
-        removeButton = new JButton(removeImage);
-        removeButton.setBorder(new EmptyBorder(0, 3, 0, 3));
-        toolbar.add(removeButton);
+        mashTable = new JTable();
+        mashPanel = new JPanel();
+        mashTablePanel = new JPanel();
+        boilTable = new JTable();
+        boilPanel = new JPanel();
+        jScrollPane2 = new JScrollPane();
+        jScrollPane3= new JScrollPane();
+        newButton = new JButton();
+        loadButton = new JButton();
+        resetButton = new JButton();
+        thermosPanel = new JPanel();
+        timerPanel = new JPanel();
+        avvisiMash = new JCheckBox();
         
         ImageIcon playImage = new ImageIcon("images/play.png");
         playButton = new JButton(playImage);
@@ -88,8 +146,15 @@ public class App extends JFrame implements ActionListener {
         
         ImageIcon stopImage = new ImageIcon("images/stop.png");
         stopButton = new JButton(stopImage);
-        addButton.setBorder(new EmptyBorder(0, 3, 0, 3));
+        stopButton.setBorder(new EmptyBorder(0, 3, 0, 3));
         toolbar.add(stopButton);
+        
+     // Radio Manual/Auto control panel
+      		JPanel radioPanel = createControlRadioButtons();
+      		Dimension centerDimension = new Dimension(100, 20);
+      		radioPanel.setPreferredSize(centerDimension);
+      		
+      		toolbar.add(radioPanel);
         
         add(toolbar, BorderLayout.NORTH);
         
@@ -139,17 +204,120 @@ public class App extends JFrame implements ActionListener {
         //Center Region
         JPanel centerPanel = new JPanel();
         	
-        	// Radio Manual/Auto control panel
-     		JPanel radioPanel = createControlRadioButtons();
-     		Dimension centerDimension = new Dimension(100, 50);
-     		radioPanel.setPreferredSize(centerDimension);
-     		
-     		//Table mash steps
-     		Box table = createTable();
+        mashTablePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mash", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 0, 10))); // NOI18N
+        mashTablePanel.setPreferredSize(new java.awt.Dimension(377, 320));
+
+        mashTable.setFont(new java.awt.Font("Lucida Grande", 0, 10));
+        mashTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Step", "°C", "Mins"
+            }
+        ));
+        mashTable.setPreferredSize(null);
+        jScrollPane2.setViewportView(mashTable);
+
+        boilTable.setFont(new java.awt.Font("Lucida Grande", 0, 10));
+        boilTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Step", "Mins"
+            }
+        ));
+        boilTable.setPreferredSize(null);
+        jScrollPane3.setViewportView(boilTable);
+
+        newButton.setFont(new Font("Lucida Grande", 3, 10));
+        newButton.setText("New");
+        newButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+            	//TODO:IMPLEMENTARE ACTION
+            	System.out.println("NEW");
+               // newButtonActionPerformed(evt);
+            }
+        });
+
+        loadButton.setFont(new Font("Lucida Grande", 3, 10));
+        loadButton.setText("Load");
+        loadButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+            	//TODO:IMPLEMENTARE ACTION
+            	System.out.println("LOAD");
+               // loadButtonActionPerformed(evt);
+            }
+        });
+
+        resetButton.setFont(new Font("Lucida Grande", 3, 10));
+        resetButton.setText("Reset");
+        resetButton.setEnabled(false);
+        resetButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+            	//TODO:IMPLEMENTARE ACTION
+            	System.out.println("RESET");
+               // resetButtonActionPerformed(evt);
+            }
+        });
+
+        GroupLayout mashTablePanelLayout = new GroupLayout(mashTablePanel);
+        mashTablePanel.setLayout(mashTablePanelLayout);
+        mashTablePanelLayout.setHorizontalGroup(
+            mashTablePanelLayout.createParallelGroup(GroupLayout.LEADING)
+            .add(mashTablePanelLayout.createSequentialGroup()
+                .addContainerGap(112, Short.MAX_VALUE)
+                .add(resetButton)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(loadButton)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(newButton)
+                .add(20, 20, 20))
+            .add(mashTablePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(mashTablePanelLayout.createParallelGroup(GroupLayout.LEADING)
+                    .add(jScrollPane2, GroupLayout.PREFERRED_SIZE, 325, GroupLayout.PREFERRED_SIZE)
+                    .add(jScrollPane3, GroupLayout.PREFERRED_SIZE, 325, GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        mashTablePanelLayout.linkSize(new java.awt.Component[] {jScrollPane2, jScrollPane3}, GroupLayout.HORIZONTAL);
+
+        mashTablePanelLayout.setVerticalGroup(
+            mashTablePanelLayout.createParallelGroup(GroupLayout.LEADING)
+            .add(mashTablePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(jScrollPane2, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jScrollPane3, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(mashTablePanelLayout.createParallelGroup(GroupLayout.BASELINE)
+                    .add(newButton)
+                    .add(loadButton)
+                    .add(resetButton))
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+
+        mashTablePanelLayout.linkSize(new java.awt.Component[] {jScrollPane2, jScrollPane3}, GroupLayout.VERTICAL);
+
+        thermosPanel.add(mashTablePanel);
+
+        
+        
+        
+        
+    	
      		
  		Box detailVerticalBox = Box.createVerticalBox();
-		detailVerticalBox.add(radioPanel);
-		detailVerticalBox.add(table);
+		//detailVerticalBox.add(radioPanel);
+		detailVerticalBox.add(thermosPanel);
 		
 		Box summaryVerticalBox = Box.createVerticalBox();
 		summaryVerticalBox.add(new JTextArea());
@@ -182,12 +350,113 @@ public class App extends JFrame implements ActionListener {
 		
 	}
 	
-	public App() {
+	 /**
+     * Creazione dei modelli delle tabelle di mash e boil, necessarie per la visualizzazione
+     * dello step attuale
+     */
+    public void createTableModel() {
+        this.mashModel = new DefaultTableModel();
+        this.mashModel.addColumn("Step");
+        this.mashModel.addColumn("°C");
+        this.mashModel.addColumn("Minutes");
+        this.mashTable.setModel(this.mashModel);
+        this.mashTable.setAutoCreateRowSorter(true);
+        this.boilModel = new DefaultTableModel();
+        this.boilModel.addColumn("Step");
+        this.boilModel.addColumn("Minutes");
+        this.boilTable.setModel(this.boilModel);
+        this.boilTable.setAutoCreateRowSorter(true);
 
+    }
+	public App() {
+		//Inizializzazione termometro mash
+		initThermo();
+		initPaths();
         initUI();
+        addThermoPanels();
+        createTableModel();
     }
 
-    public static void main(String[] args) {
+    private void addThermoPanels() {
+    	mashPanel.add(this.mashThermo);
+	}
+
+	private void initThermo() {
+    	mashThermo = new Thermo("Mash");
+	}
+	
+    /**
+     * Inizializzazione percorso cartelle di appoggio (immagini etc)
+     */
+    public void initPaths() {
+        String temp = System.getProperty("user.dir");
+        temp = temp + "/images/";
+        this.pathImages = temp;
+    }
+    
+    /**
+     * Creazione timer
+     */
+    public void initChrono() {
+        this.chrono = new TimerPanel();
+        this.timer = null;
+        this.timerPanel.add(chrono);
+    }
+	
+    /**
+     * Inserisce il riassunto della ricetta all'interno delle tabelle
+     */
+    public void fixTable() {
+        if (this.recipe.isCheck()) {
+            for (int i = 0; i < this.recipe.getMash().size(); i++) {
+                this.mashModel.addRow(new Object[]{
+                            this.recipe.getMash().get(i).getNome(),
+                            this.recipe.getMash().get(i).getEndTemp(),
+                            this.recipe.getMash().get(i).getLength()
+                        });
+            }
+
+            for (int i = 0; i < this.recipe.getHops().size(); i++) {
+                this.boilModel.addRow(new Object[]{
+                            this.recipe.getHops().get(i).getName(),
+                            this.recipe.getHops().get(i).getMinutes()
+                        });
+            }
+        }
+    }
+    
+	/**
+     * Azione relativa al pulsante load
+     *
+     * @param evt evento del mouse (click)
+     */
+    private void loadButtonActionPerformed(ActionEvent evt) {
+        try {
+            new Load(this.recipe);
+        } catch (Exception ex) {
+            this.log.error(ex);
+        }
+        if (this.recipe.isCheck()) {
+            this.fixTable();
+            int[] temp = {this.configuration.getSparegTemp(), this.configuration.getBoilTemp()};
+            //Presa solo riga connessione seriale (connectionType = 0)
+            this.timer = new Timers(chrono, recipe, list, mashTable, boilTable, this.serial.getExecutor().getTemperature(), this.serial.getTx(), 0, this.avvisiMash, /*this.avvisiBoil,*/ temp, this.configuration.getIsteresi(), this.pathImages);
+            this.timer.setTimer(this.recipe.getMash().get(0).getLength());
+            this.chrono.setSec_left(this.timer.getSec_left());
+            this.chrono.setSec_right(this.timer.getSec_right());
+            this.chrono.setMin_left(this.timer.getMin_left());
+            this.chrono.setMin_right(this.timer.getMin_right());
+            this.chrono.setHour_left(this.timer.getHour_left());
+            this.chrono.setHour_mid(this.timer.getHour_mid());
+            this.chrono.setHour_right(this.timer.getHour_right());
+            this.playButton.setEnabled(true);
+            this.loadButton.setEnabled(false);
+            this.newButton.setEnabled(false);
+            this.resetButton.setEnabled(true);
+        }
+    }
+
+	public static void main(String[] args) {
 
         SwingUtilities.invokeLater(new Runnable() {
 
@@ -246,9 +515,11 @@ public class App extends JFrame implements ActionListener {
 			}
 		});
 
-		JPanel radioPanel = new JPanel(new GridLayout(0, 1));
+		JPanel radioPanel = new JPanel(new GridLayout(1, 1));
 		radioPanel.add(autoControlButton);
+		autoControlButton.setHorizontalAlignment(0);
 		radioPanel.add(manualControlButton);
+		manualControlButton.setHorizontalAlignment(0);
 		return radioPanel;
 	}
 
@@ -305,96 +576,4 @@ public class App extends JFrame implements ActionListener {
 		}
 	}
 
-	
-	
-	public Box createTable(){
-		
-		String[] columnNames = {"Current Step",
-				                "Step Name",
-				                "Step Time",
-				                "Rest Time",
-				                "Rest Start Temp",
-				                "Rest Stop Temp",
-				                "Step Elapsed Time"};
-		
-		Object[][] data = {{false, "Acid Rest", 0, 15, 35, 35, 0},
-		        {false, "Protein Rest", 7, 20, 42, 42, 0},
-		        {true, "Saccharification", 24, 60, 66, 66, 0},
-		        {false, "Mash Out", 12, 15, 78, 78, 0}
-		        };
-		
-		final JTable table = new JTable(data, columnNames);
-        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
-        table.setFillsViewportHeight(true);
-        
-        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-        rightRenderer.setHorizontalAlignment( JLabel.RIGHT );
-        table.getColumnModel().getColumn(2).setCellRenderer( rightRenderer );
-        table.getColumnModel().getColumn(3).setCellRenderer( rightRenderer );
-        table.getColumnModel().getColumn(4).setCellRenderer( rightRenderer );
-        table.getColumnModel().getColumn(5).setCellRenderer( rightRenderer );
-        table.getColumnModel().getColumn(6).setCellRenderer( rightRenderer );
-        
-        
-        JButton addRow = new JButton();
-        addRow.setText("Add Step");
-        addRow.setToolTipText("Add a step to the mash");
-        addRow.setVerticalTextPosition(AbstractButton.CENTER);
-        addRow.setHorizontalTextPosition(AbstractButton.LEADING);
-        addRow.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				createAndShowGUI(); 
-			}
-		});
-        
-        JButton removeRow = new JButton();
-        removeRow.setText("Remove Step");
-        removeRow.setToolTipText("Remove a step to the mash");
-        removeRow.setVerticalTextPosition(AbstractButton.CENTER);
-        removeRow.setHorizontalTextPosition(AbstractButton.LEADING);
-        removeRow.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//TODO: action
-			}
-		});
-        
-        JScrollPane pane = new JScrollPane(table);
-        
-        Box hBox = Box.createHorizontalBox();
-        hBox.add(addRow);
-        hBox.add(Box.createRigidArea(new Dimension(5, 0)));
-        hBox.add(removeRow);
-        
-        Box box = Box.createVerticalBox();
-        box.add(pane);
-        box.add(hBox);
-        
-        
-                
-        return box;
-	}
-	
-    /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
-     */
-    private static void createAndShowGUI() {
-        //Create and set up the window.
-        JFrame frame = new JFrame("InputForm");
-         
-        //Create and set up the content pane.
-        JComponent newContentPane = new InputForm();
-        newContentPane.setOpaque(true); 
-        //content panes must be opaque
-        frame.setContentPane(newContentPane);
-         
-        //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-    }
 }

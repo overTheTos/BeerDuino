@@ -123,8 +123,8 @@ public class SingleByteCommunication implements SerialPortEventListener {
 
 					}
 					Float temperature = Float.parseFloat(temp.trim());
-					// System.out.println("Temperatura sensore (°C): " +
-					// temperature);
+					 System.out.println("Temperatura sensore (°C): " +
+					 temperature);
 
 					this.temperatura = temperature;
 
