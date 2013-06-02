@@ -190,18 +190,18 @@ public class Timers extends Thread {
      * @param isteresi isteresi (ridondante, da sistemare)
      * @param path percorso della cartella contenente le immagini dei pulsanti
      */
-    public Timers(TimerPanel chrono, Recipe recipe, JButton[] list, JTable mashTable, JTable boilTable, Temperature t, Buffer tx, int type, JCheckBox avvisiMash, /*JCheckBox avvisiBoil,*/ int[] configuration, double isteresi, String path) {
+    public Timers(TimerPanel chrono, Recipe recipe, /*JButton[] list,*/ JTable mashTable, JTable boilTable,/* Temperature t, Buffer tx,*/ int type, JCheckBox avvisiMash, /*JCheckBox avvisiBoil,*/ int[] configuration, double isteresi, String path) {
         this.chrono = chrono;
         this.recipe = recipe;
         this.count = 0;
         this.mashFinished = false;
-        this.boilFinished = false;
-        this.list = list;
+        //this.boilFinished = false;
+        //this.list = list;
         this.mashTable = mashTable;
-        this.boilTable = boilTable;
-        this.temperature = t;
+        //this.boilTable = boilTable;
+        //this.temperature = t;
         this.createSession();
-        this.tx = tx;
+        //this.tx = tx;
         this.type = type;
         this.avvisiMash = avvisiMash;
         //this.avvisiBoil = avvisiBoil;

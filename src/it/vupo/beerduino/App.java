@@ -60,6 +60,8 @@ public class App extends JFrame implements ActionListener {
 	
 	private static final Logger log = Logger.getLogger(App.class);
 
+	private JPanel systemTimerPanel;
+	
 	//Configurazione
 	private Configuration configuration;
     private String pathImages;
@@ -87,7 +89,7 @@ public class App extends JFrame implements ActionListener {
     private JScrollPane jScrollPane2;
     private JScrollPane jScrollPane3;
     private JPanel thermosPanel;
-    private JButton newButton;
+   // private JButton newButton;
     private JButton loadButton;
     private JButton resetButton;
     
@@ -107,12 +109,12 @@ public class App extends JFrame implements ActionListener {
 		GlobalSetting.INSTANCE.setManualControl(false);
 		
 		//Serial va inizializzato 
-		this.serial.getTx().put("?atxOn$");
+//		this.serial.getTx().put("?atxOn$");
 		
 		configuration = new Configuration();
 		
 		//Main frame
-		setSize(800, 600);
+		setSize(960, 680);
         setTitle(AppConst.APPLICATION_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -124,37 +126,37 @@ public class App extends JFrame implements ActionListener {
 
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
-
-        mashTable = new JTable();
-        mashPanel = new JPanel();
-        mashTablePanel = new JPanel();
-        boilTable = new JTable();
-        boilPanel = new JPanel();
-        jScrollPane2 = new JScrollPane();
-        jScrollPane3= new JScrollPane();
-        newButton = new JButton();
-        loadButton = new JButton();
-        resetButton = new JButton();
-        thermosPanel = new JPanel();
-        timerPanel = new JPanel();
-        avvisiMash = new JCheckBox();
+        
+       
         
         ImageIcon playImage = new ImageIcon("images/play.png");
         playButton = new JButton(playImage);
         playButton.setBorder(new EmptyBorder(0, 3, 0, 3));
+        playButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                playActionPerformed(evt);
+            }
+        });
         toolbar.add(playButton);
         
         ImageIcon stopImage = new ImageIcon("images/stop.png");
         stopButton = new JButton(stopImage);
         stopButton.setBorder(new EmptyBorder(0, 3, 0, 3));
+        playButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+                //TODO:implementare action stop
+            	//stopActionPerformed(evt);
+            }
+        });
         toolbar.add(stopButton);
         
-     // Radio Manual/Auto control panel
-      		JPanel radioPanel = createControlRadioButtons();
-      		Dimension centerDimension = new Dimension(100, 20);
-      		radioPanel.setPreferredSize(centerDimension);
-      		
-      		toolbar.add(radioPanel);
+        //Radio Manual/Auto control panel
+  		JPanel radioPanel = createControlRadioButtons();
+  		Dimension centerDimension = new Dimension(100, 20);
+  		radioPanel.setPreferredSize(centerDimension);
+  		
+  		toolbar.add(radioPanel);
         
         add(toolbar, BorderLayout.NORTH);
         
@@ -237,23 +239,11 @@ public class App extends JFrame implements ActionListener {
         boilTable.setPreferredSize(null);
         jScrollPane3.setViewportView(boilTable);
 
-        newButton.setFont(new Font("Lucida Grande", 3, 10));
-        newButton.setText("New");
-        newButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-            	//TODO:IMPLEMENTARE ACTION
-            	System.out.println("NEW");
-               // newButtonActionPerformed(evt);
-            }
-        });
-
         loadButton.setFont(new Font("Lucida Grande", 3, 10));
         loadButton.setText("Load");
         loadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-            	//TODO:IMPLEMENTARE ACTION
-            	System.out.println("LOAD");
-               // loadButtonActionPerformed(evt);
+                loadButtonActionPerformed(evt);
             }
         });
 
@@ -262,9 +252,7 @@ public class App extends JFrame implements ActionListener {
         resetButton.setEnabled(false);
         resetButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-            	//TODO:IMPLEMENTARE ACTION
-            	System.out.println("RESET");
-               // resetButtonActionPerformed(evt);
+                resetButtonActionPerformed(evt);
             }
         });
 
@@ -277,8 +265,6 @@ public class App extends JFrame implements ActionListener {
                 .add(resetButton)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(loadButton)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(newButton)
                 .add(20, 20, 20))
             .add(mashTablePanelLayout.createSequentialGroup()
                 .addContainerGap()
@@ -299,7 +285,6 @@ public class App extends JFrame implements ActionListener {
                 .add(jScrollPane3, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(mashTablePanelLayout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(newButton)
                     .add(loadButton)
                     .add(resetButton))
                 .addContainerGap(15, Short.MAX_VALUE))
@@ -309,25 +294,24 @@ public class App extends JFrame implements ActionListener {
 
         thermosPanel.add(mashTablePanel);
 
+        //Orologio
+        timerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Timer", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 0, 10))); // NOI18N
+        timerPanel.setPreferredSize(new java.awt.Dimension(500, 210));
+
         
-        
-        
-        
-    	
-     		
  		Box detailVerticalBox = Box.createVerticalBox();
-		//detailVerticalBox.add(radioPanel);
 		detailVerticalBox.add(thermosPanel);
+		detailVerticalBox.add(timerPanel);
 		
 		Box summaryVerticalBox = Box.createVerticalBox();
 		summaryVerticalBox.add(new JTextArea());
 		
-		//Box horizontalBox = Box.createHorizontalBox();
 		centerPanel.add(detailVerticalBox);
 		centerPanel.add(summaryVerticalBox);	
         
         add(centerPanel, BorderLayout.CENTER);
         
+
         
         //South Region
         JTextField temperature = new JTextField(10);
@@ -350,6 +334,27 @@ public class App extends JFrame implements ActionListener {
 		
 	}
 	
+    /**
+     * Azione associata al pulsante play
+     *
+     * @param evt evento del mouse (click)
+     */
+    private void playActionPerformed(ActionEvent evt) {
+        if (!this.playButton.isSelected()) {
+            this.playButton.setIcon(new ImageIcon(this.pathImages + "pause.png"));
+            this.playButton.setSelected(true);
+            if (this.timer.isAlive()) {
+                this.timer.resume();
+            } else {
+                this.timer.start();
+            }
+        } else {
+            this.playButton.setIcon(new ImageIcon(this.pathImages + "play.png"));
+            this.playButton.setSelected(false);
+            this.timer.suspend();
+        }
+    }
+	
 	 /**
      * Creazione dei modelli delle tabelle di mash e boil, necessarie per la visualizzazione
      * dello step attuale
@@ -370,7 +375,7 @@ public class App extends JFrame implements ActionListener {
     }
 	public App() {
 		//Inizializzazione termometro mash
-		initThermo();
+		initAll();
 		initPaths();
         initUI();
         addThermoPanels();
@@ -381,8 +386,29 @@ public class App extends JFrame implements ActionListener {
     	mashPanel.add(this.mashThermo);
 	}
 
-	private void initThermo() {
+	private void initAll() {
     	mashThermo = new Thermo("Mash");
+    	
+    	mashTable = new JTable();
+        mashPanel = new JPanel();
+        mashTablePanel = new JPanel();
+        boilTable = new JTable();
+        boilPanel = new JPanel();
+        jScrollPane2 = new JScrollPane();
+        jScrollPane3= new JScrollPane();
+        loadButton = new JButton();
+        resetButton = new JButton();
+        thermosPanel = new JPanel();
+        timerPanel = new JPanel();
+        avvisiMash = new JCheckBox();
+        
+        recipe = new Recipe();
+     	
+        this.chrono = new TimerPanel();
+        this.timer = null;
+        this.timerPanel.add(chrono);
+        
+        systemTimerPanel = new JPanel();
 	}
 	
     /**
@@ -440,8 +466,8 @@ public class App extends JFrame implements ActionListener {
             this.fixTable();
             int[] temp = {this.configuration.getSparegTemp(), this.configuration.getBoilTemp()};
             //Presa solo riga connessione seriale (connectionType = 0)
-            this.timer = new Timers(chrono, recipe, list, mashTable, boilTable, this.serial.getExecutor().getTemperature(), this.serial.getTx(), 0, this.avvisiMash, /*this.avvisiBoil,*/ temp, this.configuration.getIsteresi(), this.pathImages);
-            this.timer.setTimer(this.recipe.getMash().get(0).getLength());
+            this.timer = new Timers(chrono, recipe, /*list,*/ mashTable, boilTable, /*this.serial.getExecutor().getTemperature(), this.serial.getTx(),*/ 0, this.avvisiMash, /*this.avvisiBoil,*/ temp, this.configuration.getIsteresi(), this.pathImages);
+            this.timer.setTimer(this.recipe.getMash().get(0).getLength().intValue());
             this.chrono.setSec_left(this.timer.getSec_left());
             this.chrono.setSec_right(this.timer.getSec_right());
             this.chrono.setMin_left(this.timer.getMin_left());
@@ -451,9 +477,41 @@ public class App extends JFrame implements ActionListener {
             this.chrono.setHour_right(this.timer.getHour_right());
             this.playButton.setEnabled(true);
             this.loadButton.setEnabled(false);
-            this.newButton.setEnabled(false);
             this.resetButton.setEnabled(true);
         }
+    }
+    
+    /**
+     * Azione relativa al pulsante reset
+     *
+     * @param evt evento del mouse (click)
+     */
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        int count = this.mashModel.getRowCount();
+        for (int i = 0; i < count; i++) {
+            this.mashModel.removeRow(0);
+        }
+        count = this.boilTable.getRowCount();
+        for (int i = 0; i < count; i++) {
+            this.boilModel.removeRow(0);
+        }
+        this.resetChrono();
+        this.playButton.setEnabled(false);
+        this.loadButton.setEnabled(true);
+    }
+    
+    /**
+     * Setta a 0 il cronometro
+     */
+    public void resetChrono() {
+        this.chrono.setSec_left(0);
+        this.chrono.setSec_right(0);
+        this.chrono.setMin_left(0);
+        this.chrono.setMin_right(0);
+        this.chrono.setHour_left(0);
+        this.chrono.setHour_mid(0);
+        this.chrono.setHour_right(0);
+        this.chrono.repaint();
     }
 
 	public static void main(String[] args) {
@@ -497,6 +555,8 @@ public class App extends JFrame implements ActionListener {
 				greenButton.setEnabled(false);
 				relayButton.setEnabled(false);
 				almButton.setEnabled(false);
+				timerPanel.setEnabled(false);
+				thermosPanel.setEnabled(false);
 				JOptionPane.showMessageDialog(App.this,
 						"Automatic Control Enabled", "Control",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -509,6 +569,8 @@ public class App extends JFrame implements ActionListener {
 				greenButton.setEnabled(true);
 				relayButton.setEnabled(true);
 				almButton.setEnabled(true);
+				timerPanel.setEnabled(true);
+				thermosPanel.setEnabled(true);
 				JOptionPane.showMessageDialog(App.this,
 						"Manual Control Enabled", "Control",
 						JOptionPane.INFORMATION_MESSAGE);
