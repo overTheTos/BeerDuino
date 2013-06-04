@@ -64,10 +64,10 @@ public class Timers extends Thread {
      * Ricetta
      */
     private Recipe recipe;
-    /**
-     * Array contenente i vari pulsanti del sistema di controllo
-     */
-    private JButton[] list;
+//    /**
+//     * Array contenente i vari pulsanti del sistema di controllo
+//     */
+//    private JButton[] list;
     /**
      * Stringa contenente il percorso dove sono salvate le immagini dei pulsanti
      */
@@ -129,13 +129,13 @@ public class Timers extends Thread {
      */
     private JCheckBox avvisiMash;
     /**
-     * JCheckBox per il controllo del pulsante autoSparge
-     */
-    private JCheckBox autoSparge;
-    /**
-     * JCheckBox per il controllo del pulsante avvisiBoil
-     */
-    private JCheckBox avvisiBoil;
+//     * JCheckBox per il controllo del pulsante autoSparge
+//     */
+//    private JCheckBox autoSparge;
+//    /**
+//     * JCheckBox per il controllo del pulsante avvisiBoil
+//     */
+//    private JCheckBox avvisiBoil;
     /**
      * Step relativoa al test dello iodio
      */
@@ -151,28 +151,28 @@ public class Timers extends Thread {
     public Timers() {
     }
 
-    /**
-     * Costruttore secondario (sparge)
-     * @param t oggetto temperature per la lettura delle temperature
-     * @param tx buffer di trasmissione
-     * @param list array contenente i pulsanti del sistema di controllo
-     * @param type variabile che mi indica se sto creando un timer per lo sparge (1) o per il mash (0)
-     * @param autoSparge JCheckBox per controllare il valore del pulsante autoSparge se è attivo o meno
-     * @param configuration attributi di configurazione (isteresi, boil temp e sparge temp)
-     * @param isteresi isteresi (ridondante, da sistemare)
-     * @param path percorso della cartella contenente le immagini dei pulsanti
-     */
-    public Timers(Temperature t, Buffer tx, JButton[] list, int type, JCheckBox autoSparge, int[] configuration, double isteresi, String path) {
-        this.temperature = t;
-        this.tx = tx;
-        this.type = type;
-        this.list = list;
-        this.autoSparge = autoSparge;
-        this.configuration = configuration;
-        this.isteresi = isteresi;
-        this.alarm = new Alarm(this.pathImages);
-        this.pathImages = path;
-    }
+//    /**
+//     * Costruttore secondario (sparge)
+//     * @param t oggetto temperature per la lettura delle temperature
+//     * @param tx buffer di trasmissione
+//     * @param list array contenente i pulsanti del sistema di controllo
+//     * @param type variabile che mi indica se sto creando un timer per lo sparge (1) o per il mash (0)
+//     * @param autoSparge JCheckBox per controllare il valore del pulsante autoSparge se è attivo o meno
+//     * @param configuration attributi di configurazione (isteresi, boil temp e sparge temp)
+//     * @param isteresi isteresi (ridondante, da sistemare)
+//     * @param path percorso della cartella contenente le immagini dei pulsanti
+//     */
+//    public Timers(Temperature t, Buffer tx, JButton[] list, int type, JCheckBox autoSparge, int[] configuration, double isteresi, String path) {
+//        this.temperature = t;
+//        this.tx = tx;
+//        this.type = type;
+//        this.list = list;
+//        this.autoSparge = autoSparge;
+//        this.configuration = configuration;
+//        this.isteresi = isteresi;
+//        this.alarm = new Alarm(this.pathImages);
+//        this.pathImages = path;
+//    }
 
     /**
      * Costruttore secondario (mash)
@@ -269,7 +269,7 @@ public class Timers extends Thread {
         switch (this.type) {
             case 0:
                 boolean chk = false;
-                while (!boilFinished) {
+               // while (!boilFinished) {
                     while (!chk && !mashFinished) {
                         System.out.println("aspetto");
                         chk = this.checkMashTemperature();
@@ -279,7 +279,9 @@ public class Timers extends Thread {
                             Logger.getLogger(Timers.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
+                    
                     this.checkMashTemperature();
+                    
                     this.chrono.setDotsOn(!this.chrono.isDotsOn());
                     if (this.chrono.isDotsOn()) {
                         this.chrono.setSec_right(this.chrono.getSec_right() - 1);
@@ -318,6 +320,7 @@ public class Timers extends Thread {
                     if (this.chrono.getHour_right() == -1) {
                         this.setTimer(0);
                         String tmp = "";
+                        
                         if (!this.mashFinished && this.count == iodio) {
                             this.alarm = new Alarm(this.pathImages);
                             this.alarm.playSound();
@@ -331,6 +334,7 @@ public class Timers extends Thread {
                                 this.alarm.stopSound();
                             }
                         }
+                        
                         if (!tmp.equalsIgnoreCase("")) {
                             this.setTimer(Integer.parseInt(tmp));
                         } else {
@@ -345,36 +349,36 @@ public class Timers extends Thread {
                                 } else {
                                     this.mashFinished = true;
                                     this.count = 0;
-                                    this.setTimer(this.recipe.getBollitura());
+                                   // this.setTimer(this.recipe.getBollitura());
                                     //this.setTimer(this.arrBoil[count]);
-                                    if (this.list[1].isSelected()) {
-                                        this.changeButtonState(this.list[1]);
-                                    }
-                                    this.list[5].setIcon(new ImageIcon(this.pathImages + "play.png"));
-            this.list[5].setBorder(null);
-            this.list[5].setSelected(false);
+//                                    if (this.list[1].isSelected()) {
+//                                        this.changeButtonState(this.list[1]);
+//                                    }
+//                                    this.list[5].setIcon(new ImageIcon(this.pathImages + "play.png"));
+//            this.list[5].setBorder(null);
+//            this.list[5].setSelected(false);
             this.suspend();
   
                                     this.tx.put("?mashOff$");
-                                    while (!chk) {
-                                        chk = this.checkBoilTemperature();
-                                        try {
-                                            Thread.sleep(1000);
-                                        } catch (InterruptedException ex) {
-                                            Logger.getLogger(Timers.class.getName()).log(Level.SEVERE, null, ex);
-                                        }
-                                    }
+//                                    while (!chk) {
+//                                        chk = this.checkBoilTemperature();
+//                                        try {
+//                                            Thread.sleep(1000);
+//                                        } catch (InterruptedException ex) {
+//                                            Logger.getLogger(Timers.class.getName()).log(Level.SEVERE, null, ex);
+//                                        }
+//                                    }
 
 
-                                    if (this.avvisiBoil.isSelected()) {
-                                        this.alarm = new Alarm(this.pathImages);
-                                        this.alarm.playSound();
-                                        JOptionPane.showMessageDialog(new JFrame(),
-                                                "Inserisci " + this.recipe.getHops().get(count).getName(),
-                                                "Insert...",
-                                                JOptionPane.WARNING_MESSAGE);
-                                        this.alarm.stopSound();
-                                    }
+//                                    if (this.avvisiBoil.isSelected()) {
+//                                        this.alarm = new Alarm(this.pathImages);
+//                                        this.alarm.playSound();
+//                                        JOptionPane.showMessageDialog(new JFrame(),
+//                                                "Inserisci " + this.recipe.getHops().get(count).getName(),
+//                                                "Insert...",
+//                                                JOptionPane.WARNING_MESSAGE);
+//                                        this.alarm.stopSound();
+//                                    }
                                     count++;
 
                                 }
@@ -384,25 +388,25 @@ public class Timers extends Thread {
 
                     if (this.mashFinished) {
                         //int tmp = this.getTimer();
-                        if (count < this.arrBoil.length) {
-
-                            if (this.checkTime()) {
-                                //if (tmp == this.arrBoil[count] - 1) {
-                                if (this.avvisiBoil.isSelected()) {
-                                    this.alarm = new Alarm(this.pathImages);
-                                    this.alarm.playSound();
-                                    JOptionPane.showMessageDialog(new JFrame(),
-                                            "Inserisci " + this.recipe.getHops().get(count).getName(),
-                                            "Insert...",
-                                            JOptionPane.WARNING_MESSAGE);
-                                    this.alarm.stopSound();
-                                }
-                                this.boilTable.setSelectionBackground(Color.GREEN);
-                                this.boilTable.setRowSelectionInterval(0, count - 1);
-                                count++;
-                            }
-                        } else {
-                            if (this.checkNumbers()) {
+//                        if (count < this.arrBoil.length) {
+//
+//                            if (this.checkTime()) {
+//                                //if (tmp == this.arrBoil[count] - 1) {
+//                                if (this.avvisiBoil.isSelected()) {
+//                                    this.alarm = new Alarm(this.pathImages);
+//                                    this.alarm.playSound();
+//                                    JOptionPane.showMessageDialog(new JFrame(),
+//                                            "Inserisci " + this.recipe.getHops().get(count).getName(),
+//                                            "Insert...",
+//                                            JOptionPane.WARNING_MESSAGE);
+//                                    this.alarm.stopSound();
+//                                }
+//                                this.boilTable.setSelectionBackground(Color.GREEN);
+//                                this.boilTable.setRowSelectionInterval(0, count - 1);
+//                                count++;
+//                            }
+//                        } else {
+//                            if (this.checkNumbers()) {
                                 this.boilTable.setSelectionBackground(Color.GREEN);
                                 this.boilTable.setRowSelectionInterval(0, count - 1);
                                 this.boilFinished = true;
@@ -413,13 +417,13 @@ public class Timers extends Thread {
                                         "Sessione terminata",
                                         JOptionPane.WARNING_MESSAGE);
                                 this.alarm.stopSound();
-                                this.list[5].setEnabled(false);
+                         //       this.list[5].setEnabled(false);
                                 this.tx.put("?boilOff$");
-                                if (this.list[3].isSelected()) {
-                                    this.changeButtonState(this.list[3]);
-                                }
-                            }
-                        }
+//                                if (this.list[3].isSelected()) {
+//                                    this.changeButtonState(this.list[3]);
+//                                }
+//                            }
+//                        }
                     }
                     this.chrono.repaint();
 
@@ -428,20 +432,21 @@ public class Timers extends Thread {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Timers.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                }
+                //}
 
                 break;
 
-            case 1:
-                while (this.autoSparge.isSelected()) {
-                    this.checkSpargeTemperature();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Timers.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-        }
+//            case 1:
+//                while (this.autoSparge.isSelected()) {
+//                    this.checkSpargeTemperature();
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException ex) {
+//                        Logger.getLogger(Timers.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }
+
+    	}
     }
 
     /**
@@ -488,80 +493,80 @@ public class Timers extends Thread {
     public boolean checkMashTemperature() {
         if (!this.mashFinished) {
             if (this.temperature.getMashTemp() < (this.arrMash[count][1] - this.isteresi)) {
-                if (!this.list[1].isSelected()) {
-                    this.changeButtonState(this.list[1]);
+//                if (!this.list[1].isSelected()) {
+//                    this.changeButtonState(this.list[1]);
                     this.tx.put("?mashOn$");
-                }
+//                }
                 return false;
             } else {
                 if (this.temperature.getMashTemp() >= (this.arrMash[count][1] - this.isteresi)) {
-                    if (this.list[1].isSelected()) {
-                        this.changeButtonState(this.list[1]);
+//                    if (this.list[1].isSelected()) {
+//                        this.changeButtonState(this.list[1]);
                         this.tx.put("?mashOff$");
                         return true;
-                    } else {
-                        return true;
-                    }
+//                    } else {
+//                        return true;
+//                    }
                 }
             }
         }
         return false;
     }
 
-    /**
-     * Controlla il valore della temperatura della pentola di sparge, accendendo o spegnendo il relay che
-     * controlla la sua elettrovalvola qualora la temperatura sia minore o maggiore di quella impostata
-     * nelle configurazioni
-     */
-    public void checkSpargeTemperature() {
-        if (this.temperature.getSpargeTemp() < (this.configuration[0] - this.isteresi) && !this.list[2].isSelected()) {
-            this.changeButtonState(this.list[2]);
-            this.tx.put("?spargeOn$");
-        } else {
-            if (this.temperature.getSpargeTemp() >= (this.configuration[0] - this.isteresi) && this.list[2].isSelected()) {
-                this.changeButtonState(this.list[2]);
-                this.tx.put("?spargeOff$");
-            }
-        }
-    }
+//    /**
+//     * Controlla il valore della temperatura della pentola di sparge, accendendo o spegnendo il relay che
+//     * controlla la sua elettrovalvola qualora la temperatura sia minore o maggiore di quella impostata
+//     * nelle configurazioni
+//     */
+//    public void checkSpargeTemperature() {
+//        if (this.temperature.getSpargeTemp() < (this.configuration[0] - this.isteresi) && !this.list[2].isSelected()) {
+//            this.changeButtonState(this.list[2]);
+//            this.tx.put("?spargeOn$");
+//        } else {
+//            if (this.temperature.getSpargeTemp() >= (this.configuration[0] - this.isteresi) && this.list[2].isSelected()) {
+//                this.changeButtonState(this.list[2]);
+//                this.tx.put("?spargeOff$");
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Controlla il valore della temperatura della pentola di boil, accendendo o spegnendo il relay che
+//     * controlla la sua elettrovalvola qualora la temperatura sia minore o maggiore di quella impostata
+//     * nelle configurazioni
+//     */
+//    public boolean checkBoilTemperature() {
+//        if (this.temperature.getBoilTemp() < (this.configuration[1] - this.isteresi)) {
+//            if (!this.list[3].isSelected()) {
+//                this.changeButtonState(this.list[3]);
+//                this.tx.put("?boilOn$");
+//            }
+//            return false;
+//
+//        } else {
+//            if (!this.list[3].isSelected()) {
+//                this.changeButtonState(this.list[3]);
+//                this.tx.put("?boilOn$");
+//            }
+//            return true;
+//        }
+//    }
 
-    /**
-     * Controlla il valore della temperatura della pentola di boil, accendendo o spegnendo il relay che
-     * controlla la sua elettrovalvola qualora la temperatura sia minore o maggiore di quella impostata
-     * nelle configurazioni
-     */
-    public boolean checkBoilTemperature() {
-        if (this.temperature.getBoilTemp() < (this.configuration[1] - this.isteresi)) {
-            if (!this.list[3].isSelected()) {
-                this.changeButtonState(this.list[3]);
-                this.tx.put("?boilOn$");
-            }
-            return false;
-
-        } else {
-            if (!this.list[3].isSelected()) {
-                this.changeButtonState(this.list[3]);
-                this.tx.put("?boilOn$");
-            }
-            return true;
-        }
-    }
-
-    /**
-     * Funzione per cambiare lo stato di un pulsante (e la relativa immagine)
-     * @param button
-     */
-    public void changeButtonState(JButton button) {
-        if (button.isSelected()) {
-            button.setIcon(new ImageIcon(this.pathImages + "offOn.png"));
-            button.setBorder(null);
-            button.setSelected(false);
-        } else {
-            button.setIcon(new ImageIcon(this.pathImages + "OnOff.png"));
-            button.setBorder(null);
-            button.setSelected(true);
-        }
-    }
+//    /**
+//     * Funzione per cambiare lo stato di un pulsante (e la relativa immagine)
+//     * @param button
+//     */
+//    public void changeButtonState(JButton button) {
+//        if (button.isSelected()) {
+//            button.setIcon(new ImageIcon(this.pathImages + "offOn.png"));
+//            button.setBorder(null);
+//            button.setSelected(false);
+//        } else {
+//            button.setIcon(new ImageIcon(this.pathImages + "OnOff.png"));
+//            button.setBorder(null);
+//            button.setSelected(true);
+//        }
+//    }
 
     /***********************
      *                     *

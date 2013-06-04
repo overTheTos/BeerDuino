@@ -1,7 +1,5 @@
 package it.vupo.beerduino;
 
-
-
 import it.vupo.beerduino.configuration.AppConst;
 import it.vupo.beerduino.configuration.Configuration;
 import it.vupo.beerduino.configuration.GlobalSetting;
@@ -43,13 +41,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.jdesktop.layout.GroupLayout;
-
-
-
-
-
 
 
 public class App extends JFrame implements ActionListener {
@@ -60,7 +54,7 @@ public class App extends JFrame implements ActionListener {
 	
 	private static final Logger log = Logger.getLogger(App.class);
 
-	private JPanel systemTimerPanel;
+	//private JPanel systemTimerPanel;
 	
 	//Configurazione
 	private Configuration configuration;
@@ -69,7 +63,6 @@ public class App extends JFrame implements ActionListener {
 	//Ricetta
 	private Recipe recipe;
 	
-	//Timer
     private Timers timer;
     private TimerPanel chrono;
     private JPanel timerPanel;
@@ -84,7 +77,7 @@ public class App extends JFrame implements ActionListener {
     private JPanel mashPanel;
     private JTable mashTable;
     private JPanel mashTablePanel;
-    private JPanel boilPanel;
+ //   private JPanel boilPanel;
     private JTable boilTable;
     private JScrollPane jScrollPane2;
     private JScrollPane jScrollPane3;
@@ -104,7 +97,7 @@ public class App extends JFrame implements ActionListener {
 	private JButton almButton;
 	
 	public final void initUI() {
-
+		
 		//Inizializzazione dei buttons
 		GlobalSetting.INSTANCE.setManualControl(false);
 		
@@ -387,13 +380,16 @@ public class App extends JFrame implements ActionListener {
 	}
 
 	private void initAll() {
+		
+		this.log.info("Inizio creazione attributi");
+		
     	mashThermo = new Thermo("Mash");
     	
     	mashTable = new JTable();
         mashPanel = new JPanel();
         mashTablePanel = new JPanel();
         boilTable = new JTable();
-        boilPanel = new JPanel();
+       // boilPanel = new JPanel();
         jScrollPane2 = new JScrollPane();
         jScrollPane3= new JScrollPane();
         loadButton = new JButton();
@@ -408,7 +404,7 @@ public class App extends JFrame implements ActionListener {
         this.timer = null;
         this.timerPanel.add(chrono);
         
-        systemTimerPanel = new JPanel();
+      //  systemTimerPanel = new JPanel();
 	}
 	
     /**
@@ -420,15 +416,7 @@ public class App extends JFrame implements ActionListener {
         this.pathImages = temp;
     }
     
-    /**
-     * Creazione timer
-     */
-    public void initChrono() {
-        this.chrono = new TimerPanel();
-        this.timer = null;
-        this.timerPanel.add(chrono);
-    }
-	
+ 
     /**
      * Inserisce il riassunto della ricetta all'interno delle tabelle
      */
@@ -515,8 +503,11 @@ public class App extends JFrame implements ActionListener {
     }
 
 	public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(new Runnable() {
+		
+		//Configurazione log4j
+		BasicConfigurator.configure();
+        
+		SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
                 App ex = new App();

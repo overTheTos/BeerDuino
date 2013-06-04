@@ -1,14 +1,20 @@
 package it.vupo.beerduino.timer;
 
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+
+
+import javax.swing.JPanel;
+
 /**
  *  Classe per la creazione grafica del timer. Classe modificata per le mie
  * esigenze recuperata dal sito http://www.jug-muenster.de/swing-apollo-space-program-mission-timer-280/
  *
  * @author hansolo
  */
-public class TimerPanel extends javax.swing.JPanel implements java.awt.event.MouseListener {
+public class TimerPanel extends JPanel implements MouseListener {
 
-    private final java.awt.image.BufferedImage[] DIGIT_ARRAY = {
+    private final BufferedImage[] DIGIT_ARRAY = {
         createDigit(0),
         createDigit(1),
         createDigit(2),
@@ -20,10 +26,10 @@ public class TimerPanel extends javax.swing.JPanel implements java.awt.event.Mou
         createDigit(8),
         createDigit(9)
     };
-    private final java.awt.image.BufferedImage DOTS_ON = createDots(true);
-    private final java.awt.image.BufferedImage DOTS_OFF = createDots(false);
+    private final BufferedImage DOTS_ON = createDots(true);
+    private final BufferedImage DOTS_OFF = createDots(false);
     private boolean dotsOn = true;
-    private final java.awt.image.BufferedImage BACKGROUND_IMAGE = createBackground(450, 180);
+    private final BufferedImage BACKGROUND_IMAGE = createBackground(450, 180);
     private final javax.swing.Timer TIMER = new javax.swing.Timer(500, new java.awt.event.ActionListener() {
 
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -104,9 +110,9 @@ public class TimerPanel extends javax.swing.JPanel implements java.awt.event.Mou
         g2.dispose();
     }
 
-    private java.awt.image.BufferedImage createBackground(int width, int height) {
+    private BufferedImage createBackground(int width, int height) {
         java.awt.GraphicsConfiguration gfxConf = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-        java.awt.image.BufferedImage IMAGE = gfxConf.createCompatibleImage(width, height, java.awt.Transparency.TRANSLUCENT);
+        BufferedImage IMAGE = gfxConf.createCompatibleImage(width, height, java.awt.Transparency.TRANSLUCENT);
 
         java.awt.Graphics2D g2 = (java.awt.Graphics2D) IMAGE.getGraphics();
         g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
@@ -200,9 +206,9 @@ public class TimerPanel extends javax.swing.JPanel implements java.awt.event.Mou
         return IMAGE;
     }
 
-    private java.awt.image.BufferedImage createDigit(int digit) {
+    private BufferedImage createDigit(int digit) {
         java.awt.GraphicsConfiguration gfxConf = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-        java.awt.image.BufferedImage IMAGE = gfxConf.createCompatibleImage(46, 65, java.awt.Transparency.TRANSLUCENT);
+        BufferedImage IMAGE = gfxConf.createCompatibleImage(46, 65, java.awt.Transparency.TRANSLUCENT);
 
         final java.awt.Color COLOR_ON = new java.awt.Color(0x000000);
         final java.awt.Color FRAME_COLOR_ON = new java.awt.Color(0x000000);
@@ -511,9 +517,9 @@ public class TimerPanel extends javax.swing.JPanel implements java.awt.event.Mou
         return IMAGE;
     }
 
-    private java.awt.image.BufferedImage createDots(boolean on) {
+    private BufferedImage createDots(boolean on) {
         java.awt.GraphicsConfiguration gfxConf = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-        java.awt.image.BufferedImage IMAGE = gfxConf.createCompatibleImage(23, 65, java.awt.Transparency.TRANSLUCENT);
+        BufferedImage IMAGE = gfxConf.createCompatibleImage(23, 65, java.awt.Transparency.TRANSLUCENT);
 
         final java.awt.Color COLOR_ON = new java.awt.Color(0x000000);
         final java.awt.Color FRAME_COLOR_ON = new java.awt.Color(0x000000);
